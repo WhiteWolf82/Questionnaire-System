@@ -14,12 +14,8 @@ router.get('/info', function(req, res, next) {
   res.render('users/info');
 });
 
-router.get('/editinfo', function (req, res, next) {
-  res.render('users/editinfo');
-});
-
 router.get('/modifypasswd', function (req, res, next) {
-  res.render('users/forget');
+  res.render('users/modifyPasswd');
 });
 
 module.exports = router;

@@ -1,5 +1,5 @@
 var config = {
-    key: "zheboshiroudancongji",
+    secretKey: "ZheBoShiRouDanCongJi",
     db: {
         host: 'localhost',
         user: 'root',
@@ -9,4 +9,5 @@ var config = {
     }
 };
 
+module.exports.secretKey = config.secretKey;
 module.exports.db = config.db;

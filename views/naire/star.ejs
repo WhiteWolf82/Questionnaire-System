@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>问卷系统</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="stylesheet" href="../layui/css/layui.css" media="all">
+  <link rel="stylesheet" href="../style/admin.css" media="all">
+  <link rel="stylesheet" href="../style/login.css" media="all">
+  <script src="../javascripts/api.js"></script>
+  <!-- 导入Vue -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <!-- vue's ajax -->
+  <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
+  <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+</head>
+
+<body>
+  <div class="layui-fluid">
+    <div class="layui-card">
+      <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+        <div class="layui-form-item">
+          <div class="layui-inline">
+            <label class="layui-form-label">问卷ID</label>
+            <div class="layui-input-inline">
+              <input type="text" name="id" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+          </div>
+          <div class="layui-inline">
+            <label class="layui-form-label">问卷标题</label>
+            <div class="layui-input-inline">
+              <input type="text" name="title" placeholder="请输入" autocomplete="off" class="layui-input">
+            </div>
+          </div>
+          <div class="layui-inline">
+            <label class="layui-form-label">问卷状态</label>
+            <div class="layui-input-inline">
+              <select name="status">
+                <option value="">请选择标签</option>
+                <option value="-1">未发布</option>
+                <option value="0">已发布</option>
+                <option value="1">已结束</option>
+              </select>
+            </div>
+          </div>
+          <div class="layui-inline">
+            <button class="layui-btn layuiadmin-btn-list" lay-submit lay-filter="LAY-all-search">
+              <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="layui-card-body">
+        <div style="padding-bottom: 10px;">
+          <button class="layui-btn layuiadmin-btn-list layui-btn-danger" onclick="delByCheckbox()">删除</button>
+        </div>
+        <table id="LAY-all-list" lay-filter="list"></table>
+      </div>
+    </div>
+  </div>
+
+  <script src="../layui/layui.all.js"></script>
+  <script>
+    //初始表格渲染
+    var table = layui.table;
+    table.render({
+      elem: '#LAY-all-list',
+      url: '../../api/getAllNaire?star=1&trash=',
+      page: true,
+      initSort: { field: 'naire_id', type: 'asc' },
+      text: { none: '这里空空如也' },
+      parseData: function (res) {
+        return {
+          "code": res.code,
+          "data": res.data
+        };
+      },
+      cols: [[
+        { type: 'checkbox' },
+        { field: 'naire_id', title: '问卷ID', width: 150, sort: true },
+        { field: 'naire_title', title: '问卷标题', width: 250, sort: true },
+        { field: 'create_time', title: '创建时间', width: 160, sort: true },
+        { field: 'create_time', title: '开始时间', width: 160, sort: true },
+        { field: 'create_time', title: '结束时间', width: 160, sort: true },
+        { field: 'naire_status', title: '状态', width: 75, sort: true },
+        {
+          field: 'btn', title: '操作', width: 236,
+          templet: function (d) {
+            return "<a class=\"layui-btn layui-btn-sm\" target='_blank' onclick=\"edit('" + d.naire_id + "')\">编辑</a>" + 
+              "<a class=\"layui-btn layui-btn-sm layui-btn-danger\" target='_blank' onclick=\"del('" + d.naire_id + "')\">删除</a>" +
+              "<a class=\"layui-btn layui-btn-sm layui-btn-normal\" onclick=\"check('" + d.naire_id + "')\">查看</a>" +
+              "<a class=\"layui-btn layui-btn-sm layui-btn-warm\" onclick=\"unstar('" + d.naire_id + "', '" + d.is_star + "')\">取消</a>";
+          }
+        }
+      ]],
+      even: true
+    });
+    //搜索表格渲染
+    var form = layui.form;
+    form.render();
+    form.on('submit(LAY-all-search)', function (obj) {
+      var naire_id = obj.field.id;
+      var naire_title = obj.field.title;
+      var naire_status = obj.field.status;
+      table.render({
+        elem: '#LAY-all-list',
+        url: '../../api/getNaire?star=1&trash=&id=' + naire_id + '&title=' + naire_title + '&status=' + naire_status,
+        page: true,
+        initSort: { field: 'naire_id', type: 'asc' },
+        text: { none: '这里空空如也' },
+        parseData: function (res) {
+          return {
+            "code": res.code,
+            "data": res.data
+          };
+        },
+        cols: [[
+          { type: 'checkbox' },
+          { field: 'naire_id', title: '问卷ID', width: 200, sort: true },
+          { field: 'naire_title', title: '问卷标题', width: 250, sort: true },
+          { field: 'create_time', title: '创建时间', width: 160, sort: true },
+          { field: 'create_time', title: '开始时间', width: 160, sort: true },
+          { field: 'create_time', title: '结束时间', width: 160, sort: true },
+          { field: 'naire_status', title: '状态', width: 75, sort: true },
+          {
+            field: 'btn', title: '操作', width: 195,
+            templet: function (d) {
+              return "<a class=\"layui-btn layui-btn-sm\" target='_blank' onclick=edit('" + d.naire_id + "')>编辑</a>" + 
+              "<a class=\"layui-btn layui-btn-sm layui-btn-danger\" target='_blank' onclick=del('" + d.naire_id + "')>删除</a>" +
+              "<a class=\"layui-btn layui-btn-sm layui-btn-normal\" onclick=check('" + d.naire_id + "')>查看</a>" +
+              "<a class=\"layui-btn layui-btn-sm layui-btn-warm\" onclick=\"unstar('" + d.naire_id + "', '" + d.is_star + "')\">取消</a>";
+            }
+          }
+        ]],
+        even: true
+    });
+    })
+
+    function edit(naire_id) {
+      var token = getCookie('token');
+      if (token != "") {
+          $.get('../../api/edit?naire_id=' + naire_id, function (data, status) {
+              
+          });
+      } else {
+          layer.open({
+            title: '操作结果', content: '请先登录！'
+          });
+      }
+    }
+    
+    var delData;
+    table.on('checkbox(list)', function (obj) {
+      delData = table.checkStatus('LAY-all-list').data;
+    });
+
+    function delByCheckbox() {
+      //console.log(delData);
+      if (typeof(delData) === 'undefined') {
+        layer.open({
+          content: '未选中任何项！'
+        });
+        return;
+      }
+      layer.confirm('确定要将这' + delData.length + '项移入回收站吗？', {
+        btn: ['确定', '取消']
+      }, function () {
+        var token = getCookie('token');
+        if (token != "") {
+          var result = true;
+          for (var i = 0; i < delData.length; i++) {
+            $.get('../../api/trashNaire?naire_id=' + delData[i].naire_id + "&status=false", function (data, status) {
+              if (!data.result) {
+                result = false;
+              }
+            })
+          }
+          if (result) {
+            layer.confirm('删除成功！', {
+              title: '操作结果', btn: ['确定']
+            }, function() {
+              window.parent.location.reload();
+            });
+          } else {
+            layer.open({
+              title: '操作结果', content: '部分或全部删除失败，请刷新后重试！'
+            })
+          }
+        } else {
+          layer.open({
+            title: '操作结果', content: '请先登录！'
+          })
+        }
+      })
+    }
+
+    function del(naire_id) {
+      layer.confirm('确定要移入回收站吗？', {
+        btn: ['确定', '取消']
+      }, function () {
+        var token = getCookie('token');
+        if (token != "") {
+          $.get('../../api/trashNaire?naire_id=' + naire_id + "&status=false", function (data, status) {
+              if (data.result) {
+                layer.confirm('删除成功！', {
+                  title: '操作结果', btn: ['确定']
+                }, function() {
+                  window.parent.location.reload();
+                });
+              } else {
+                layer.open({
+                  title: '操作结果', content: '删除失败，请重试！'
+                })
+              }
+            })
+        } else {
+            layer.open({
+              title: '操作结果', content: '请先登录！'
+            })
+        }
+      })
+    }
+
+    function unstar(naire_id, naire_status) {
+      layer.confirm('确定要取消收藏吗？', {
+        btn: ['确定', '取消']
+      }, function () {
+        var token = getCookie('token');
+        if (token != "") {
+          $.get('../../api/starNaire?naire_id=' + naire_id + "&status=true", function (data, status) {
+              if (data.result) {
+                layer.confirm('取消成功！', {
+                  title: '操作结果', btn: ['确定']
+                }, function() {
+                  window.parent.location.reload();
+                });
+              } else {
+                layer.open({
+                  title: '操作结果', content: '取消失败，请重试！'
+                })
+              }
+            })
+        } else {
+            layer.open({
+              title: '操作结果', content: '请先登录！'
+            })
+        }
+      })
+    }
+
+    function check(naire_id) {
+
+    }
+  </script>
+</body>
+
+</html>

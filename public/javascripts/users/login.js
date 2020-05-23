@@ -17,7 +17,7 @@ var vm = new Vue({
                     { emulateJSON: true }
                 )
                 .then(response => {
-                    console.log(response)
+                    //console.log(response['body'].result);
                     if (response['body'].result) {
                         console.log(response['body'].token);
                         setCookie('token', response['body'].token, 1);
@@ -40,7 +40,7 @@ form.on('submit(LAY-user-login-submit)', function (obj) {
     // 请求登入接口
     var data = obj.field;
     vm.msg = "错误";
-    console.log(data);
+    //console.log(data);
     if (data.username.length === 0 || data.password.length === 0) {
         return layer.msg("用户名或密码不能为空！");
     }

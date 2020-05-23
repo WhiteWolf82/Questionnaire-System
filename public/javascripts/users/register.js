@@ -12,13 +12,13 @@ var vm = new Vue({
             console.log(response);
             if (response['body'].result)
               layer.open({
-                title: '注册结果', content: '注册成功', btn: ['确定'],
+                title: '注册结果', content: '注册成功！', btn: ['确定'],
                 yes: function () {
                   window.location = "login";
                 }
               });
             else
-              layer.open({ title: '注册结果', content: '注册失败' });
+              layer.open({ title: '注册结果', content: '注册失败，用户名或邮箱已存在！' });
           })
           .catch(function (response) {
             console.log(response);
@@ -36,19 +36,12 @@ var vm = new Vue({
   form.on('submit(LAY-user-reg-submit)', function (obj) {
     var data = obj.field;
     vm.msg = "错误";
-    console.log(data);
-    if (data.username.length === 0) {
-        return layer.msg("用户名不能为空！")
+    //console.log(data);
+    if (data.username.length < 6) {
+      return layer.msg("用户名长度必须在6位以上！")
     }
-    if (data.password.length === 0) {
-        return layer.msg("密码不能为空！")
-    }
-    if (data.email.length === 0) {
-        return layer.msg("邮箱不能为空！")
-    }
-    var myReg = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
-    if (!myReg.test(data.email)) {
-        return layer.msg("邮箱格式不正确！");
+    if (data.password.length < 6) {
+      return layer.msg("密码长度必须在6位以上！")
     }
     if (data.password !== data.repass) {
       return layer.msg("两次密码输入不一致！");
