@@ -13,4 +13,12 @@ router.get('/trashbin', function(req, res, next) {
     res.render('naire/trashbin');
 });
 
+router.get('/add', function(req, res, next) {
+    res.render('naire/add');
+})
+
+router.get('/question', function(req, res, next) {
+    res.render('naire/question');
+})
+
 module.exports = router;
