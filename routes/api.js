@@ -56,7 +56,7 @@ router.get('/getNaire', function (req, res, next) {
 });
 
 router.get('/editNaire', function (req, res, next) {
-
+	naireApi.getNaireAndQuestion(req, res);
 });
 
 router.get('/trashNaire', function (req, res, next) {
@@ -69,6 +69,27 @@ router.get('/deleteNaire', function (req, res, next) {
 
 router.get('/starNaire', function (req, res, next) {
 	naireApi.changeStarStatus(req, res);
+});
+
+router.post('/addNaire', function (req, res, next) {
+	const token = funcApi.parseCookie(req.headers['cookie'], 'token');
+	naireApi.addNaire(req, token, res);
+});
+
+router.post('/updateNaire', function (req, res, next) {
+	naireApi.updateNaire(req, res);
+});
+
+router.post('/addQuestion', function (req, res, next) {
+	naireApi.addQuestion(req, res);
+});
+
+router.get('/delQuestion', function (req, res, next) {
+	naireApi.delQuestion(req, res);
+});
+
+router.post('/updateQuestion', function (req, res, next) {
+	naireApi.updateQuestion(req, res);
 });
 
 module.exports = router;

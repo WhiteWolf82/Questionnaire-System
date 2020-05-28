@@ -19,72 +19,94 @@
 
 <body>
   <!-- <form class="layui-form" action=""> -->
-  <div class="layui-fluid" id="LAY-new-naire">
-    <div class="layui-row layui-col-space15">
-      <div class="layui-col-md12">
-        <div class="layui-card">
-          <div class="layui-card-header">基本信息</div>
-          <div class="layui-card-body" pad15>
-            <div class="layui-form-item">
-              <label class="layui-form-label">问卷标题</label>
-              <div class="layui-input-inline">
-                <input type="text" name="naire_title" lay-verify="required" autocomplete="off" placeholder="请输入标题" class="layui-input">
+  <div class="layui-form">
+    <div class="layui-fluid" id="LAY-new-naire">
+      <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+          <div class="layui-card">
+            <div class="layui-card-header">基本信息</div>
+            <div class="layui-card-body" pad15>
+              <div class="layui-form-item">
+                <label class="layui-form-label">问卷标题</label>
+                <div class="layui-input-block">
+                  <input type="text" name="naire_title" lay-verify="required" autocomplete="off" placeholder="请输入标题" class="layui-input">
+                </div>
+                <div class="layui-form-mid layui-word-aux">必填项</div>
               </div>
-              <div class="layui-form-mid layui-word-aux">必填项</div>
-            </div>
-            <div class="layui-form-item layui-form-text">
-              <label class="layui-form-label">问卷说明</label>
-              <div class="layui-input-block">
-                <textarea name="naire_info" placeholder="请输入问卷说明，不超过100字" class="layui-textarea"></textarea>
-              </div>
-            </div>
-            <div class="layui-form-item">
-              <div class="layui-inline">
-                <label class="layui-form-label">开始时间</label>
-                <div class="layui-input-inline">
-                  <input type="text" name="start_time" id="start_time" lay-verify="datetime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+              <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">问卷说明</label>
+                <div class="layui-input-block">
+                  <textarea name="naire_info" placeholder="请输入问卷说明，不超过100字" class="layui-textarea"></textarea>
                 </div>
               </div>
-              <div class="layui-inline">
-                <label class="layui-form-label">结束时间</label>
+              <div class="layui-form-item">
+                <div class="layui-inline">
+                  <label class="layui-form-label">开始时间</label>
+                  <div class="layui-input-inline">
+                    <input type="text" name="start_time" id="start_time" lay-verify="required" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+                  </div>
+                </div>
+                <div class="layui-inline">
+                  <label class="layui-form-label">结束时间</label>
+                  <div class="layui-input-inline">
+                    <input type="text" name="end_time" id="end_time" lay-verify="required" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+                  </div>
+                </div>
+              </div>
+              <div class="layui-form-item">
+                <!-- <label class="layui-form-label">是否匿名</label>
+                <div class="layui-input-block">
+                  <input type="checkbox" lay-filter="is-anonymous" lay-skin="switch">
+                </div> -->
+                <label class="layui-form-label">填写方式</label>
+                <div class="layui-input-block">
+                  <select lay-verify="required" lay-filter="write-type" v-model="write_type">
+                    <option value=""></option>
+                    <option value="0">仅限注册用户，填写次数无限制</option>
+                    <option value="1">无需注册，可填写n次</option>
+                    <option value="2">无需注册，每天可填写n次</option>
+                  </select>
+                </div>
+              </div>
+              <div v-show="write_type==='1' || write_type==='2'" class="layui-form-item">
+                <label class="layui-form-label">填写次数</label>
                 <div class="layui-input-inline">
-                  <input type="text" name="end_time" id="end_time" lay-verify="datetime" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+                  <input type="text" name="write_time" id="write_time" value="-1" autocomplete="off" placeholder="请输入填写次数" class="layui-input">
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="layui-row layui-col-space15" id="LAY-questions">
-      <div class="layui-col-md12">
-        <div class="layui-card">
-          <div class="layui-card-header">问题设计</div>
-          <div class="layui-card-body" pad15>
-            <div class="layui-form-item">
-              <button class="layui-btn" onclick="addQuestion()">添加</button>
-            </div>
-            <div class="layui-collapse" id="toAdd">
-              <!-- <div class="layui-colla-item">
-                <h2 class="layui-colla-title">问题1. question title1（单选题）</h2>
-                <div class="layui-colla-content">
-                  <p>选项1. sdjoasjdioasd</p>
-                  <p>选项2. sdjoasjdioasd</p>
-                  <p>选项3. sdjoasjdioasd</p>
-                  <button class="layui-btn layui-btn-sm" type="button">编辑</button>
-                  <button class="layui-btn layui-btn-sm layui-btn-danger" type="button">删除</button>
-                </div>
-              </div> -->
+      <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+          <div class="layui-card">
+            <div class="layui-card-header">问题设计</div>
+            <div class="layui-card-body" pad15>
+              <div class="layui-form-item">
+                <button class="layui-btn" onclick="addQuestion()">添加</button>
+              </div>
+              <div class="layui-collapse" id="toAdd">
+                <!-- <div class="layui-colla-item">
+                  <h2 class="layui-colla-title">问题1. question title1（单选题）</h2>
+                  <div class="layui-colla-content">
+                    <p>选项1. sdjoasjdioasd</p>
+                    <p>选项2. sdjoasjdioasd</p>
+                    <p>选项3. sdjoasjdioasd</p>
+                    <button class="layui-btn layui-btn-sm" type="button">编辑</button>
+                    <button class="layui-btn layui-btn-sm layui-btn-danger" type="button">删除</button>
+                  </div>
+                </div> -->
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="layui-form-item" style="margin-top: 15px;">
-      <button class="layui-btn" lay-submit lay-filter="addnaire">提交</button>
-      <!-- <button type="reset" class="layui-btn layui-btn-primary">重置</button> -->
+      <div class="layui-form-item" style="margin-top: 15px;">
+        <button class="layui-btn" lay-submit lay-filter="addnaire">提交</button>
+      </div>
     </div>
   </div>
   <!-- </form> -->
@@ -110,16 +132,6 @@
 
       })
     });
-
-    function addQuestion() {
-      layer.open({
-        type: 2,
-        title: '添加问题',
-        content: 'question',
-        shadeClose: true,
-        area: ['60%', '80%']
-      })
-    }
   </script>
 </body>
 

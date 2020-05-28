@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>问卷系统</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="stylesheet" href="../layui/css/layui.css" media="all">
+  <link rel="stylesheet" href="../style/admin.css" media="all">
+  <link rel="stylesheet" href="../style/login.css" media="all">
+  <script src="../javascripts/api.js"></script>
+  <!-- 导入Vue -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <!-- vue's ajax -->
+  <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
+  <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+</head>
+
+<script>
+  window.onload = function(){
+    var url = window.location.href;
+    vm.$data.naire_id = url.substr(url.indexOf('naire_id') + 9);
+    $('#naire_url').val('http://localhost:3000/answer?naire_id=' + vm.$data.naire_id);
+    $.get('../../api/editNaire?naire_id=' + vm.$data.naire_id, function (data, status) {
+        if (!data.result) {
+          return layer.msg("读取数据出错，请刷新重试！");
+        } else {
+          var naireData = data.naireData[0];
+          var questionData = data.questionData;
+          vm.$data.naire_id = naireData.naire_id;
+          vm.$data.naire_title = naireData.naire_title;
+          vm.$data.naire_info = naireData.naire_info;
+          vm.$data.start_time = naireData.start_time;
+          vm.$data.end_time = naireData.end_time;
+          vm.$data.write_type = naireData.write_type + '';
+          vm.$data.write_time = naireData.write_time;
+          console.log(questionData);
+          for (var i = 0; i < questionData.length; i++) {
+            vm.$data.question_ids.push(questionData[i].question_id);
+            vm.$data.question_types.push(questionData[i].question_type + '');
+            vm.$data.question_titles.push(questionData[i].question_title);
+            vm.$data.question_options.push(questionData[i].question_option);
+            vm.$data.question_required.push(questionData[i].is_require + '');
+            vm.$data.relate_questions.push(new Array());
+          }
+          for (var i = 0; i < questionData.length; i++) {
+            if (questionData[i].question_option.indexOf('<relate>') !== -1) {
+              var tmpStr;
+              if (questionData[i].question_type === 4)
+                tmpStr = questionData[i].question_option.substr(10);
+              else if (questionData[i].question_type === 3)
+                tmpStr = questionData[i].question_option.substr(11);
+              else if (questionData[i].question_type === 2) {
+                var rateIndex = questionData[i].question_option.indexOf('<ratetype>');
+                tmpStr = questionData[i].question_option.substr(rateIndex + 10);
+              } else {
+                var options = questionData[i].question_option.split('<option>');
+                tmpStr = options[options.length - 1];
+              }
+              var relateStart = tmpStr.indexOf('<relate>');
+              var relateQuestionID = tmpStr.substr(0, relateStart);
+              var relateQuestionIndex = vm.$data.question_ids.indexOf(relateQuestionID);
+              vm.$data.relate_questions[relateQuestionIndex].push(questionData[i].question_id);
+            }
+          }
+          showQuestion();
+          $('#write-type').val(vm.$data.write_type);
+          layui.form.render();
+        }
+    });
+  }
+</script>
+
+<body>
+  <div class="layui-form">
+    <div class="layui-fluid" id="LAY-edit-naire">
+      <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+          <div class="layui-card">
+            <div class="layui-card-header">基本信息</div>
+            <div class="layui-card-body" pad15>
+              <div class="layui-form-item">
+                <label class="layui-form-label">问卷链接</label>
+                <div class="layui-input-block">
+                  <input type="text" id="naire_url" name="naire_url" lay-verify="required" autocomplete="off" class="layui-input" disabled>
+                </div>
+              </div>
+              <div class="layui-form-item">
+                <label class="layui-form-label">问卷标题</label>
+                <div class="layui-input-block">
+                  <input type="text" v-model="naire_title" name="naire_title" lay-verify="required" autocomplete="off" placeholder="请输入标题" class="layui-input">
+                </div>
+              </div>
+              <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">问卷说明</label>
+                <div class="layui-input-block">
+                  <textarea v-model="naire_info" name="naire_info" placeholder="请输入问卷说明，不超过100字" class="layui-textarea"></textarea>
+                </div>
+              </div>
+              <div class="layui-form-item">
+                <div class="layui-inline">
+                  <label class="layui-form-label">开始时间</label>
+                  <div class="layui-input-inline">
+                    <input type="text" name="start_time" v-model="start_time" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input" disabled>
+                  </div>
+                </div>
+                <div class="layui-inline">
+                  <label class="layui-form-label">结束时间</label>
+                  <div class="layui-input-inline">
+                    <input type="text" name="end_time" v-model="end_time" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input" disabled>
+                  </div>
+                </div>
+              </div>
+              <div class="layui-form-item">
+                <label class="layui-form-label">填写方式</label>
+                <div class="layui-input-block">
+                  <select id="write-type" v-model="write_type" lay-filter="write-type">
+                    <option value=""></option>
+                    <option value="0">仅限注册用户，填写次数无限制</option>
+                    <option value="1">无需注册，可填写n次</option>
+                    <option value="2">无需注册，每天可填写n次</option>
+                  </select>
+                </div>
+              </div>
+              <div v-show="write_type==='1' || write_type==='2'" class="layui-form-item">
+                <label class="layui-form-label">填写次数</label>
+                <div class="layui-input-inline">
+                  <input type="text" name="write_time" v-model="write_time" autocomplete="off" placeholder="请输入填写次数" class="layui-input">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+          <div class="layui-card">
+            <div class="layui-card-header">问题设计</div>
+            <div class="layui-card-body" pad15>
+              <!-- <div class="layui-form-item">
+                <button class="layui-btn" onclick="addQuestion()">添加</button>
+              </div> -->
+              <div class="layui-collapse" id="toAdd">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="layui-form-item" style="margin-top: 15px;">
+        <button class="layui-btn" lay-submit lay-filter="editnaire">提交</button>
+      </div>
+    </div>
+  </div>
+  
+  <script src="../layui/layui.all.js"></script>
+  <script src="../javascripts/naire/edit.js"></script>
+  <script>
+    layui.use('laydate', function() {
+      var laydate = layui.laydate;
+      laydate.render({
+        elem: '#start_time',
+        type: 'datetime'
+      });
+      laydate.render({
+        elem: '#end_time',
+        type: 'datetime'
+      });
+    })
+
+    layui.use('element', function(){
+      var element = layui.element;
+      element.render({
+
+      })
+    });
+
+    function addQuestion() {
+      layer.open({
+        type: 2,
+        title: '添加问题',
+        content: 'question',
+        shadeClose: true,
+        area: ['60%', '80%']
+      })
+    }
+  </script>
+</body>
+
+</html>

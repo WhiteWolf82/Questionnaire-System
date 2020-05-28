@@ -83,8 +83,8 @@
         { field: 'naire_id', title: '问卷ID', width: 150, sort: true },
         { field: 'naire_title', title: '问卷标题', width: 250, sort: true },
         { field: 'create_time', title: '创建时间', width: 160, sort: true },
-        { field: 'create_time', title: '开始时间', width: 160, sort: true },
-        { field: 'create_time', title: '结束时间', width: 160, sort: true },
+        { field: 'start_time', title: '开始时间', width: 160, sort: true },
+        { field: 'end_time', title: '结束时间', width: 160, sort: true },
         { field: 'naire_status', title: '状态', width: 75, sort: true },
         {
           field: 'btn', title: '操作', width: 236,
@@ -118,15 +118,15 @@
           };
         },
         cols: [[
-          { type: 'checkbox' },
-          { field: 'naire_id', title: '问卷ID', width: 200, sort: true },
-          { field: 'naire_title', title: '问卷标题', width: 250, sort: true },
-          { field: 'create_time', title: '创建时间', width: 160, sort: true },
-          { field: 'create_time', title: '开始时间', width: 160, sort: true },
-          { field: 'create_time', title: '结束时间', width: 160, sort: true },
-          { field: 'naire_status', title: '状态', width: 75, sort: true },
+        { type: 'checkbox' },
+        { field: 'naire_id', title: '问卷ID', width: 150, sort: true },
+        { field: 'naire_title', title: '问卷标题', width: 250, sort: true },
+        { field: 'create_time', title: '创建时间', width: 160, sort: true },
+        { field: 'start_time', title: '开始时间', width: 160, sort: true },
+        { field: 'end_time', title: '结束时间', width: 160, sort: true },
+        { field: 'naire_status', title: '状态', width: 75, sort: true },
           {
-            field: 'btn', title: '操作', width: 195,
+            field: 'btn', title: '操作', width: 236,
             templet: function (d) {
               return "<a class=\"layui-btn layui-btn-sm\" target='_blank' onclick=edit('" + d.naire_id + "')>编辑</a>" + 
               "<a class=\"layui-btn layui-btn-sm layui-btn-danger\" target='_blank' onclick=del('" + d.naire_id + "')>删除</a>" +

@@ -17,7 +17,7 @@
   <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
 </head>
 <body>
-  <div style="margin: 25px 60px 0 0;" id="LAY-add-question">
+  <div style="margin: 25px 60px 0 0;" id="LAY-edit-question">
     <form class="layui-form" action="">
       <div class="layui-form-item">
         <label class="layui-form-label">问题描述</label>
@@ -28,7 +28,7 @@
       <div class="layui-form-item">
         <label class="layui-form-label">问题类型</label>
         <div class="layui-input-inline">
-          <select id="selectedType" lay-verify="required" lay-filter="select-type" v-model="selectedType">
+          <select id="selectedType" lay-verify="required" lay-filter="select-type" v-model="selectedType" disabled>
             <option value=""></option>
             <option value="0">单选题</option>
             <option value="1">多选题</option>
@@ -47,16 +47,16 @@
       <div class="layui-form-item">
         <label class="layui-form-label">是否级联</label>
         <div class="layui-input-block">
-          <input id="isRelate" type="checkbox" v-model="isRelate" lay-filter="is-relate" lay-skin="switch">
+          <input id="isRelate" type="checkbox" v-model="isRelate" lay-filter="is-relate" lay-skin="switch" disabled>
         </div>
       </div>
       <div v-show="isRelate===true" class="layui-form-item">
         <label class="layui-form-label">关联问题</label>
         <div class="layui-input-block" id="relateAdd">
-          <select lay-filter="relate-question" v-model="relateQuestion" id="relateSelect">
+          <select lay-filter="relate-question" v-model="relateQuestion" id="relateSelect" disabled>
             <script>
-              var questions = parent.addVm.$data.question_titles;
-              var types = parent.addVm.$data.question_types;
+              var questions = parent.vm.$data.question_titles;
+              var types = parent.vm.$data.question_types;
               var html = "<option value=''></option>";
               for (var i = 0; i < questions.length; i++) {
                 if (types[i] === '0')
@@ -75,7 +75,7 @@
         <div class="layui-inline">
           <label class="layui-form-label">选项1</label>
           <div class="layui-input-inline">
-            <input type="text" id="question_option1" name="question_option1" autocomplete="off" class="layui-input">
+            <input type="text" id="question_option1" name="question_option1" autocomplete="off" class="layui-input" disabled>
           </div>
         </div>
       </div>
@@ -83,55 +83,55 @@
         <div class="layui-inline">
           <label class="layui-form-label">选项2</label>
           <div class="layui-input-inline">
-            <input type="text" id="question_option2" name="question_option2" autocomplete="off" class="layui-input">
+            <input type="text" id="question_option2" name="question_option2" autocomplete="off" class="layui-input" disabled>
           </div>
-          <button class="layui-btn layui-btn-small" type="button" onclick="addOption()">添加</button>
+          <!-- <button class="layui-btn layui-btn-small" type="button" onclick="addOption()">添加</button> -->
         </div>
       </div>
       <div v-show="selectedType=='2'" class="layui-form-item">
         <label class="layui-form-label">最小分值</label>
         <div class="layui-input-inline">
-          <input type="text" id="floor_rate" name="floor_rate" placeholder="不小于0的整数" autocomplete="off" class="layui-input">
+          <input type="text" id="floor_rate" name="floor_rate" placeholder="不小于0的整数" autocomplete="off" class="layui-input" disabled>
         </div>
       </div>
       <div v-show="selectedType=='2'" class="layui-form-item">
         <label class="layui-form-label">最大分值</label>
         <div class="layui-input-inline">
-          <input type="text" id="ceil_rate" name="ceil_rate" placeholder="不超过10的整数" autocomplete="off" class="layui-input">
+          <input type="text" id="ceil_rate" name="ceil_rate" placeholder="不超过10的整数" autocomplete="off" class="layui-input" disabled>
         </div>
       </div>
       <div v-show="selectedType=='2'" class="layui-form-item">
         <label class="layui-form-label">评分题类型</label>
         <div class="layui-input-inline">
-          <input lay-filter="rate-type" type="radio" id="rateType0" name="rateType" value="0" title="评分单选" v-model="rateType">
-          <input lay-filter="rate-type" type="radio" id="rateType1" name="rateType" value="1" title="评分滑块" v-model="rateType">
+          <input lay-filter="rate-type" type="radio" id="rateType0" name="rateType" value="0" title="评分单选" v-model="rateType" disabled>
+          <input lay-filter="rate-type" type="radio" id="rateType1" name="rateType" value="1" title="评分滑块" v-model="rateType" disabled>
         </div>
       </div>
       <div v-show="selectedType=='3'" class="layui-form-item">
         <label class="layui-form-label">文本填写题类型</label>
         <div class="layui-input-inline">
-          <input lay-filter="text-type" type="radio" id="textType0" name="textType" value="0" title="单行" v-model="textType">
-          <input lay-filter="text-type" type="radio" id="textType1" name="textType" value="1" title="多行" v-model="textType">
+          <input lay-filter="text-type" type="radio" id="textType0" name="textType" value="0" title="单行" v-model="textType" disabled>
+          <input lay-filter="text-type" type="radio" id="textType1" name="textType" value="1" title="多行" v-model="textType" disabled>
         </div>
       </div>
       <div v-show="selectedType=='4'" class="layui-form-item">
         <label class="layui-form-label">数字填写题类型</label>
         <div class="layui-input-inline">
-          <input lay-filter="num-type" type="radio" id="numType0" name="numType" value="0" title="整数" v-model="numType">
-          <input lay-filter="num-type" type="radio" id="numType1" name="numType" value="1" title="小数" v-model="numType">
+          <input lay-filter="num-type" type="radio" id="numType0" name="numType" value="0" title="整数" v-model="numType" disabled>
+          <input lay-filter="num-type" type="radio" id="numType1" name="numType" value="1" title="小数" v-model="numType" disabled>
         </div>
       </div>
       <div class="layui-form-item">
         <div class="layui-input-block">
-          <button class="layui-btn" lay-submit lay-filter="addquestion">提交</button>
-          <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+          <button class="layui-btn" lay-submit lay-filter="editquestion">提交</button>
         </div>
       </div>
     </form>
   </div>
 
   <script src="../layui/layui.all.js"></script>
-  <script src="../javascripts/naire/question.js"></script>
+  <script src="../javascripts/naire/editquestion.js"></script>
+
 </body>
 
 </html>

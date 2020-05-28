@@ -5,21 +5,69 @@ const jwt = require('jsonwebtoken');
 const secretKey = require('../config').key;
 const fs = require('fs');
 
-exports.addNaire = function (req, res, next) {
-    var sql = "INSERT INTO questionnaire(username, naire_id, naire_title, naire_info, naire_status, create_time, start_time, end_time, is_star, is_trash) \
-    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    var username = req.body['username'];
-    var naire_id = req.body['naire_id'];
-    var naire_title = req.body['naire_title'];
-    var naire_info = req.body['naire_info'];
-    var naire_status = req.body['naire_status'] * 1;
-    var create_time = req.body['create_time'];
-    var start_time = req.body['start_time'];
-    var end_time = req.body['end_time'];
-    db.query(sql, [username, naire_id, naire_title, naire_info, naire_status, create_time, start_time, end_time, false, false], function(err, results) {
+exports.addNaire = function (req, token, res) {
+    api.parseToken(token, res, function (username, res) {
+        var sql = "INSERT INTO questionnaire(username, naire_id, naire_title, naire_info, naire_status, create_time, start_time, end_time, write_type, write_time, is_star, is_trash) \
+                VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        var naire_id = req.body['naire_id'];
+        var naire_title = req.body['naire_title'];
+        var naire_info = req.body['naire_info'];
+        var naire_status = req.body['naire_status'] * 1;
+        var create_time = req.body['create_time'];
+        var start_time = req.body['start_time'];
+        var end_time = req.body['end_time'];
+        var write_type = req.body['write_type'] * 1;
+        var write_time = req.body['write_time'] * 1;
+        db.query(sql, [username, naire_id, naire_title, naire_info, naire_status, create_time, start_time, end_time, write_type, write_time, false, false], function(err, results) {
+            if (err) {
+                console.log(err);
+                //next(createError(500));
+                res.send({ result: false });
+            } else {
+                res.send({ result: true });
+            }
+        })
+    })
+}
+
+exports.getNaireAndQuestion = function (req, res, next) {
+    var sql = "SELECT * FROM questionnaire WHERE naire_id = ?";
+    var naire_id = req.query.naire_id;
+    var naireInfo, questionInfo;
+    db.query(sql, [naire_id], function(err, results) {
         if (err) {
             console.log(err);
-            next(createError(500));
+            res.send({ result: false });
+        } else {
+            results[0].create_time = api.transformTime(results[0].create_time);
+            results[0].start_time = api.transformTime(results[0].start_time);
+            results[0].end_time = api.transformTime(results[0].end_time);
+            naireInfo = results;
+            sql = "SELECT * FROM question WHERE naire_id = ? ORDER BY add_order";
+            db.query(sql, [naire_id], function(err, results) {
+                if (err) {
+                    console.log(err);
+                    res.send({ result: false });
+                } else {
+                    questionInfo = results;
+                    res.send({ result: true, naireData: naireInfo, questionData: questionInfo });
+                }
+            })
+        }
+    })
+}
+
+exports.updateNaire = function (req, res, next) {
+    var sql = "UPDATE questionnaire SET naire_title = ?, naire_info = ?, write_type = ?, write_time = ? WHERE naire_id = ?";
+    var naire_title = req.body['naire_title'];
+    var naire_info = req.body['naire_info'];
+    var write_type = req.body['write_type'] * 1;
+    var write_time = req.body['write_time'] * 1;
+    var naire_id = req.body['naire_id'];
+    db.query(sql, [naire_title, naire_info, write_type, write_time, naire_id], function(err, results) {
+        if (err) {
+            console.log(err);
+            res.send({ result: false });
         } else {
             res.send({ result: true });
         }
@@ -64,20 +112,20 @@ exports.changeTrashStatus = function (req, res, next) {
 }
 
 exports.deleteNaire = function (req, res, next) {
-    var sql = "DELETE FROM questionnaire WHERE naire_id = ?";
+    var sql = "DELETE FROM question WHERE naire_id = ?";
     var naire_id = req.query.naire_id;
     db.query(sql, [naire_id], function(err, results) {
         if (err) {
             console.log(err);
             res.send({ result: false });
         } else {
-            sql = "DELETE FROM question WHERE naire_id = ?";
+            sql = "DELETE FROM answer WHERE naire_id = ?";
             db.query(sql, [naire_id], function(err, results) {
                 if (err) {
                     console.log(err);
                     res.send({ result: false });
                 } else {
-                    sql = "DELETE FROM answer WHERE naire_id = ?";
+                    sql = "DELETE FROM questionnaire WHERE naire_id = ?";
                     db.query(sql, [naire_id], function(err, results) {
                         if (err) {
                             console.log(err);
@@ -161,16 +209,55 @@ exports.getNaire = function (req, token, res, next) {
 }
 
 exports.addQuestion = function (req, res, next) {
-    var sql = "INSERT INTO question(question_id, naire_id, question_type, question_title, question_option) VALUES(?, ?, ?, ?, ?)";
+    var sql = "INSERT INTO question(question_id, naire_id, question_type, question_title, question_option, is_require) VALUES(?, ?, ?, ?, ?, ?)";
     var question_id = req.body['question_id'];
     var naire_id = req.body['naire_id'];
     var question_type = req.body['question_type'] * 1;
     var question_title = req.body['question_title'];
     var question_option = req.body['question_option'];
-    db.query(sql, [question_id, naire_id, question_type, question_title, question_option], function(err, results) {
+    //console.log(req.body['question_require']);
+    var question_require = (req.body['question_require'] === 'true') ? true : false;
+    db.query(sql, [question_id, naire_id, question_type, question_title, question_option, question_require], function(err, results) {
         if (err) {
             console.log(err);
-            next(createError(500));
+            //next(createError(500));
+            res.send({ result: false });
+        } else {
+            res.send({ result: true });
+        }
+    })
+}
+
+exports.delQuestion = function (req, res, next) {
+    var sql = "DELETE FROM question WHERE question_id = ?";
+    var question_id = req.query.question_id;
+    db.query(sql, [question_id], function(err, results) {
+        if (err) {
+            console.log(err);
+            res.send({ result: false });
+        } else {
+            sql = "DELETE FROM answer WHERE question_id = ?";
+            db.query(sql, [question_id], function(err, results) {
+                if (err) {
+                    console.log(err);
+                    res.send({ result: false });
+                } else {
+                    res.send({ result: true });
+                }
+            })
+        }
+    })
+}
+
+exports.updateQuestion = function (req, res, next) {
+    var sql = "UPDATE question SET question_title = ?, is_require = ? WHERE question_id = ?";
+    var question_title = req.body['question_title'];
+    var is_require = (req.body['is_require'] == 'true') ? true : false;
+    var question_id = req.body['question_id'];
+    db.query(sql, [question_title, is_require, question_id], function(err, results) {
+        if (err) {
+            console.log(err);
+            res.send({ result: false });
         } else {
             res.send({ result: true });
         }
