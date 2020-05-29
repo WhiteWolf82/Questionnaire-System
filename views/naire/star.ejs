@@ -142,9 +142,7 @@
     function edit(naire_id) {
       var token = getCookie('token');
       if (token != "") {
-          $.get('../../api/edit?naire_id=' + naire_id, function (data, status) {
-              
-          });
+          window.location.href = "edit?naire_id=" + naire_id;
       } else {
           layer.open({
             title: '操作结果', content: '请先登录！'
