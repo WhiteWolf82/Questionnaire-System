@@ -3,7 +3,7 @@ const secretKey = require('../config').secretKey;
 
 exports.parseToken = function (token, res, callback) {
     if (typeof (token) == 'undefined' || token == "") {
-        callback("00000000000", res);
+        callback("", res);
     } else
         jwt.verify(token, secretKey, function (err, decode) {
             if (err) {

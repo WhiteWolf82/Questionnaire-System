@@ -55,7 +55,7 @@ router.get('/getNaire', function (req, res, next) {
 	naireApi.getNaire(req, token, res);
 });
 
-router.get('/editNaire', function (req, res, next) {
+router.get('/getNaireAndQuestion', function (req, res, next) {
 	naireApi.getNaireAndQuestion(req, res);
 });
 
@@ -91,5 +91,19 @@ router.get('/delQuestion', function (req, res, next) {
 router.post('/updateQuestion', function (req, res, next) {
 	naireApi.updateQuestion(req, res);
 });
+
+router.get('/getAnswerInfo', function (req, res, next) {
+	naireApi.getAnswerInfo(req, res);
+});
+
+router.post('/addAnswer', function (req, res, next) {
+	//console.log(req);
+	const token = funcApi.parseCookie(req.headers['cookie'], 'token');
+	naireApi.addAnswer(req, token, res);
+});
+
+router.post('/updateAnswerInfo', function (req, res, next) {
+	naireApi.updateAnswerInfo(req, res);
+})
 
 module.exports = router;

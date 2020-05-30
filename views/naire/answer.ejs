@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>问卷系统</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="stylesheet" href="../layui/css/layui.css" media="all">
+  <link rel="stylesheet" href="../style/admin.css" media="all">
+  <link rel="stylesheet" href="../style/login.css" media="all">
+  <script src="../javascripts/api.js"></script>
+  <!-- 导入Vue -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <!-- vue's ajax -->
+  <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
+  <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+  <script src="http://pv.sohu.com/cityjson"></script>
+</head>
+
+<script>
+  window.onload = function() {
+    var url = window.location.href;
+    vm.$data.naire_id = url.substr(url.indexOf('naire_id') + 9);
+    $.get('../../api/getNaireAndQuestion?naire_id=' + vm.$data.naire_id, function (data, status) {
+      if (!data.result) {
+        return layer.msg("读取数据出错，请刷新重试！");
+      } else {
+        var endTime = data.naireData[0].end_time;
+        var curTime = getTime(new Date());
+        if (curTime > endTime) {
+          layer.open({
+              title: '操作结果', content: '该问卷已停止收集！',
+              yes: function (index, layero) {
+                window.location.href = "/";
+                layer.close(index);
+              }
+          })
+        }
+        vm.$data.naire_title = data.naireData[0].naire_title;
+        vm.$data.naire_info = data.naireData[0].naire_info;
+        vm.$data.write_type = data.naireData[0].write_type * 1;
+        vm.$data.write_time = data.naireData[0].write_time * 1;
+        if (vm.$data.write_type === 0)
+          vm.$data.needLogin = true;
+        else
+          vm.$data.needLogin = false;
+        $('#naire_title').html('<b>' + vm.$data.naire_title + '</b>');
+        $('#naire_info').html(vm.$data.naire_info);
+        var questionData = data.questionData;
+        for (var i = 0; i < questionData.length; i++) {
+          vm.$data.question_ids.push(questionData[i].question_id);
+          vm.$data.question_types.push(questionData[i].question_type + '');
+          vm.$data.question_titles.push(questionData[i].question_title);
+          vm.$data.question_options.push(questionData[i].question_option);
+          vm.$data.question_required.push(questionData[i].is_require + '');
+        }
+        //console.log(returnCitySN['cip']);
+        vm.$data.ip_addr = returnCitySN['cip'];
+        if (vm.$data.needLogin === true) {
+          if (!checkLogin()) {
+            layer.open({
+              title: '操作结果', content: '该问卷仅限注册用户填写，请登录后再访问链接！',
+              yes: function (index, layero) {
+                window.location.href = "../users/login";
+                layer.close(index);
+              }
+            })
+          }
+        } else {
+          var answerInfo;
+          $.get('../../api/getAnswerInfo?naire_id=' + vm.$data.naire_id + '&ip_addr=' + vm.$data.ip_addr, function (data, status) {
+            if (!data.result) {
+              return layer.msg("读取数据出错，请刷新重试！");
+            } else {
+              answerInfo = data.info;
+              //console.log(answerInfo);
+              if (answerInfo !== "New") {
+                if (vm.$data.write_type === 1) {
+                  if (parseInt(answerInfo.answer_cnt) >= vm.$data.write_time) {
+                    layer.open({
+                      title: '操作结果', content: '该IP地址填写次数已超过限制',
+                      yes: function (index, layero) {
+                        window.location.href = "/";
+                        layer.close(index);
+                      }
+                    })
+                  }
+                } else if (vm.$data.write_type === 2) {
+                  if (parseInt(answerInfo.answer_cnt) >= vm.$data.write_time) {
+                    layer.open({
+                      title: '操作结果', content: '该IP地址单日填写次数已超过限制',
+                      yes: function (index, layero) {
+                        window.location.href = "/";
+                        layer.close(index);
+                      }
+                    })
+                  }
+                }
+              }
+            }
+          })
+        }
+        showQuestions();
+      }
+    })
+  }
+</script>
+
+<body>
+  <div class="layui-container" id="LAY-answer">
+    <div class="layui-row layui-col-space15">
+      <h1 id="naire_title" align="center" style="margin-top: 1%;"></h1>
+    </div>
+    <div class="layui-row layui-col-space15">
+      <div class="layui-col-md12">
+        <div v-show="naire_info !== ''" class="layui-card">
+          <div class="layui-card-header"><b>问卷信息</b></div>
+          <div id="naire_info" class="layui-card-body" pad15></div>
+        </div>
+      </div>
+    </div>
+    <div class="layui-row layui-col-space15">
+      <div class="layui-col-md12">
+        <div class="layui-card">
+          <div class="layui-card-header"><b>问题描述</b></div>
+          <div class="layui-card-body" pad15>
+            <div class="layui-form" lay-filter="answer-form" id="toAdd">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../layui/layui.all.js"></script>
+  <script src="../javascripts/naire/answer.js"></script>
+  <div id="addScript"></div>
+</body>
+</html>

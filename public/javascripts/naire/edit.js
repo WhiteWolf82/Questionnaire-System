@@ -25,7 +25,7 @@ var vm = new Vue({
 var form = layui.form;
 form.render();
 form.on('select(write-type)', function(data) {
-    addVm.$data.write_type = data.value;
+    vm.$data.write_type = data.value;
 });
 form.on('submit(editnaire)', function(obj) {
     var data = obj.field;

@@ -29,9 +29,8 @@
               <div class="layui-form-item">
                 <label class="layui-form-label">问卷标题</label>
                 <div class="layui-input-block">
-                  <input type="text" name="naire_title" lay-verify="required" autocomplete="off" placeholder="请输入标题" class="layui-input">
+                  <input type="text" name="naire_title" lay-verify="required" autocomplete="off" placeholder="请输入标题，必填" class="layui-input">
                 </div>
-                <div class="layui-form-mid layui-word-aux">必填项</div>
               </div>
               <div class="layui-form-item layui-form-text">
                 <label class="layui-form-label">问卷说明</label>
@@ -63,7 +62,7 @@
                   <select lay-verify="required" lay-filter="write-type" v-model="write_type">
                     <option value=""></option>
                     <option value="0">仅限注册用户，填写次数无限制</option>
-                    <option value="1">无需注册，可填写n次</option>
+                    <option value="1">无需注册，可填写n次，填写周期无限制</option>
                     <option value="2">无需注册，每天可填写n次</option>
                   </select>
                 </div>

@@ -27,6 +27,10 @@ router.get('/edit', function(req, res, next) {
 
 router.get('/editquestion', function(req, res, next) {
     res.render('naire/editquestion');
-})
+});
+
+router.get('/answer', function(req, res, next) {
+    res.render('naire/answer');
+});
 
 module.exports = router;

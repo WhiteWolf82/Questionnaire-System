@@ -21,8 +21,9 @@
   window.onload = function(){
     var url = window.location.href;
     vm.$data.naire_id = url.substr(url.indexOf('naire_id') + 9);
-    $('#naire_url').val('http://localhost:3000/answer?naire_id=' + vm.$data.naire_id);
-    $.get('../../api/editNaire?naire_id=' + vm.$data.naire_id, function (data, status) {
+    var preIndex = url.indexOf('edit');
+    $('#naire_url').val(url.substr(0, preIndex) + "answer?naire_id=" + vm.$data.naire_id);
+    $.get('../../api/getNaireAndQuestion?naire_id=' + vm.$data.naire_id, function (data, status) {
         if (!data.result) {
           return layer.msg("读取数据出错，请刷新重试！");
         } else {
@@ -118,7 +119,7 @@
                   <select id="write-type" v-model="write_type" lay-filter="write-type">
                     <option value=""></option>
                     <option value="0">仅限注册用户，填写次数无限制</option>
-                    <option value="1">无需注册，可填写n次</option>
+                    <option value="1">无需注册，可填写n次，填写周期无限制</option>
                     <option value="2">无需注册，每天可填写n次</option>
                   </select>
                 </div>

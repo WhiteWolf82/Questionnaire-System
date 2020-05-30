@@ -112,7 +112,7 @@ exports.changeTrashStatus = function (req, res, next) {
 }
 
 exports.deleteNaire = function (req, res, next) {
-    var sql = "DELETE FROM question WHERE naire_id = ?";
+    var sql = "DELETE FROM answerinfo WHERE naire_id = ?";
     var naire_id = req.query.naire_id;
     db.query(sql, [naire_id], function(err, results) {
         if (err) {
@@ -125,13 +125,21 @@ exports.deleteNaire = function (req, res, next) {
                     console.log(err);
                     res.send({ result: false });
                 } else {
-                    sql = "DELETE FROM questionnaire WHERE naire_id = ?";
+                    sql = "DELETE FROM question WHERE naire_id = ?";
                     db.query(sql, [naire_id], function(err, results) {
                         if (err) {
                             console.log(err);
                             res.send({ result: false });
                         } else {
-                            res.send({ result: true });
+                            sql = "DELETE FROM questionnaire WHERE naire_id = ?";
+                            db.query(sql, [naire_id], function(err, results) {
+                                if (err) {
+                                    console.log(err);
+                                    res.send({ result: false });
+                                } else {
+                                    res.send({ result: true });
+                                }
+                            })
                         }
                     })
                 }
@@ -264,19 +272,57 @@ exports.updateQuestion = function (req, res, next) {
     })
 }
 
-exports.addAnswer = function (req, res, next) {
-    var sql = "INSERT INTO answer(username, answer_id, naire_id, answer_type, answer_option) VALUES(?, ?, ?, ?, ?)";
-    var username = req.body['username'];
-    var answer_id = req.body['answer_id'];
+exports.addAnswer = function (req, token, res) {
+    api.parseToken(token, res, function (username) {
+        var sql = "INSERT INTO answer(username, answer_id, naire_id, question_id, answer_type, answer_option) VALUES(?, ?, ?, ?, ?, ?)";
+        var answer_id = req.body['answer_id'];
+        var naire_id = req.body['naire_id'];
+        var question_id = req.body['question_id'];
+        var answer_type = req.body['answer_type'] * 1;
+        var answer_option = req.body['answer_option'];
+        db.query(sql, [username, answer_id, naire_id, question_id, answer_type, answer_option], function(err, results) {
+            if (err) {
+                console.log(err);
+                res.send({ result: false });
+            } else {
+                res.send({ result: true });
+            }
+        })
+    })
+}
+
+exports.updateAnswerInfo = function (req, res, next) {
+    var sql = "SELECT * FROM answerinfo WHERE naire_id = ? AND ip_addr = ?";
     var naire_id = req.body['naire_id'];
-    var answer_type = req.body['answer_type'] * 1;
-    var answer_option = req.body['answer_option'];
-    db.query(sql, [username, answer_id, naire_id, answer_type, answer_option], function(err, results) {
+    var ip_addr = req.body['ip_addr'];
+    var write_type = req.body['write_type'] * 1;
+    db.query(sql, [naire_id, ip_addr], function (err, results) {
         if (err) {
             console.log(err);
-            next(createError(500));
+            res.send({ result: false });
         } else {
-            res.send({ result: true });
+            if (results.length === 0) {
+                sql = "INSERT INTO answerinfo(ip_addr, naire_id, write_type, answer_cnt) VALUES(?, ?, ?, 1)";
+                db.query(sql, [ip_addr, naire_id, write_type], function(err, results) {
+                    if (err) {
+                        console.log(err);
+                        res.send({ result: false });
+                    } else {
+                        res.send({ result: true });
+                    }
+                })
+            } else {
+                var cnt = results[0].answer_cnt * 1 + 1;
+                sql = "UPDATE answerinfo SET answer_cnt = ? WHERE ip_addr = ? AND naire_id = ?";
+                db.query(sql, [cnt, ip_addr, naire_id], function(err, results) {
+                    if (err) {
+                        console.log(err);
+                        res.send({ result: false });
+                    } else {
+                        res.send({ result: true });
+                    }
+                })
+            }
         }
     })
 }
@@ -290,6 +336,23 @@ exports.getAnswer = function (req, res, next) {
             next(createError(403));
         } else {
             res.send({ data: results });
+        }
+    })
+}
+
+exports.getAnswerInfo = function (req, res, next) {
+    var sql = "SELECT * FROM answerinfo WHERE ip_addr = ? and naire_id = ?";
+    var ip_addr = req.query.ip_addr;
+    var naire_id = req.query.naire_id;
+    db.query(sql, [ip_addr, naire_id], function(err, results) {
+        if (err) {
+            console.log(err);
+            res.send({ result: false });
+        } else {
+            if (results.length === 0)
+                res.send({ result: true, info: "New" });
+            else
+                res.send({ result: true, info: results[0] });
         }
     })
 }

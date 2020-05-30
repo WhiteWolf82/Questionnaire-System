@@ -188,12 +188,13 @@ function child(data) {
 }
 
 function addCheckbox(val) {
+    $('#relateOption').empty();
     var options = parent.addVm.$data.question_options[parseInt(val)].split("<option>");
     var str = "";
     for (var i = 0; i < options.length - 1; i++) {
         str += "<input type='checkbox' lay-filter='check' id='checkbox" + i + "' name='" + i + "' title='" + options[i] + "' lay-skin='primary'><br>";
     }
-    $('#relateAdd').append(str);
+    $('#relateOption').html(str);
 }
 
 function addOption() {
