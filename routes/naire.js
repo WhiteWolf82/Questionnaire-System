@@ -33,4 +33,8 @@ router.get('/answer', function(req, res, next) {
     res.render('naire/answer');
 });
 
+router.get('/check', function(req, res, next) {
+    res.render('naire/check');
+});
+
 module.exports = router;

@@ -104,6 +104,10 @@ router.post('/addAnswer', function (req, res, next) {
 
 router.post('/updateAnswerInfo', function (req, res, next) {
 	naireApi.updateAnswerInfo(req, res);
+});
+
+router.get('/getAnswer', function (req, res, next) {
+	naireApi.getAnswer(req, res);
 })
 
 module.exports = router;

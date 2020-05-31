@@ -328,14 +328,14 @@ exports.updateAnswerInfo = function (req, res, next) {
 }
 
 exports.getAnswer = function (req, res, next) {
-    var sql = "SELECT * FROM answer WHERE naire_id = ?";
-    var naire_id = req.body['naire_id'];
-    db.query(sql, [naire_id], function(err, results) {
+    var sql = "SELECT * FROM answer WHERE question_id = ?";
+    var question_id = req.query.question_id;
+    db.query(sql, [question_id], function(err, results) {
         if (err) {
             console.log(err);
-            next(createError(403));
+            res.send({ result: false });
         } else {
-            res.send({ data: results });
+            res.send({ result: true, answerData: results });
         }
     })
 }

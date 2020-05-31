@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>问卷系统</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="stylesheet" href="../layui/css/layui.css" media="all">
+  <link rel="stylesheet" href="../style/admin.css" media="all">
+  <link rel="stylesheet" href="../style/login.css" media="all">
+  <script src="../javascripts/api.js"></script>
+  <!-- 导入Vue -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <!-- vue's ajax -->
+  <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
+  <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+</head>
+
+<script>
+  window.onload = function(){
+    var url = window.location.href;
+    vm.$data.naire_id = url.substr(url.indexOf('naire_id') + 9);
+    $.ajaxSettings.async = false;
+    $.get('../../api/getNaireAndQuestion?naire_id=' + vm.$data.naire_id, function (data, status) {
+        if (!data.result) {
+            return layer.msg("读取数据出错，请刷新重试！");
+        } else {
+            var naireData = data.naireData[0];
+            var questionData = data.questionData;
+            vm.$data.naire_id = naireData.naire_id;
+            vm.$data.naire_title = naireData.naire_title;
+            vm.$data.naire_info = naireData.naire_info;
+            vm.$data.start_time = naireData.start_time;
+            vm.$data.end_time = naireData.end_time;
+            //console.log(naireData);
+            for (var i = 0; i < questionData.length; i++) {
+                vm.$data.question_ids.push(questionData[i].question_id);
+                vm.$data.question_types.push(questionData[i].question_type);
+                vm.$data.question_titles.push(questionData[i].question_title);
+                vm.$data.question_options.push(questionData[i].question_option);
+                vm.$data.answer_options.push(new Array());
+            }
+            var flag = true;
+            var index = 0;
+            for (var i = 0; i < vm.$data.question_ids.length && flag; i++) {
+                $.get('../../api/getAnswer?question_id=' + vm.$data.question_ids[i], function (data, status) {
+                    if (!data.result) {
+                        flag = false;
+                        return layer.msg("读取数据出错，请刷新重试！");
+                    } else {
+                        //console.log(data);
+                        for (var j = 0; j < data.answerData.length; j++) {
+                            vm.$data.answer_options[index].push(data.answerData[j].answer_option);
+                        }
+                        index++;
+                    }
+                })
+            }
+        }
+    });
+    $.ajaxSettings.async = false;
+    showResult();
+  }
+
+  
+</script>
+
+<body>
+  <div class="layui-fluid" id="LAY-result">
+    <div class="layui-row layui-col-space15">
+      <div class="layui-col-md12">
+        <div class="layui-card">
+          <div class="layui-card-header"><b>问卷信息</b></div>
+          <div class="layui-card-body" pad15>
+            <div id="naire_id"></div>
+            <div id="naire_title"></div>
+            <div v-show="naire_info.length !== 0" id="naire_info"></div>
+            <div id="start_time"></div>
+            <div id="end_time"></div>
+          </div>
+        </div>
+      </div>
+      <div class="layui-col-md12">
+        <div class="layui-card">
+          <div class="layui-card-header"><b>统计结果</b></div>
+          <div class="layui-card-body" id="toAdd" pad15>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="../layui/layui.all.js"></script>
+  <script src="../javascripts/naire/check.js"></script>
+  <script>
+    layui.use('element', function(){
+      var element = layui.element;
+      element.render();
+    });
+  </script>
+  <div id="addScript"></div>
+</body>
+
+</html>
