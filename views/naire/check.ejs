@@ -21,6 +21,8 @@
   window.onload = function(){
     var url = window.location.href;
     vm.$data.naire_id = url.substr(url.indexOf('naire_id') + 9);
+    var preIndex = url.indexOf('check');
+    vm.$data.naire_url = url.substr(0, preIndex) + "answer?naire_id=" + vm.$data.naire_id;
     $.ajaxSettings.async = false;
     $.get('../../api/getNaireAndQuestion?naire_id=' + vm.$data.naire_id, function (data, status) {
         if (!data.result) {
