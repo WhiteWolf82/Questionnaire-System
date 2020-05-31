@@ -3,6 +3,7 @@ var vm = new Vue({
     data: {
         naire_id: '',
         naire_title: '',
+        naire_url: '',
         start_time: '',
         end_time: '',
         naire_info: '',
@@ -21,6 +22,7 @@ function showResult() {
     $('#naire_id').html("<b>问卷ID：</b>" + vm.$data.naire_id);
     $('#naire_title').html("<b>问卷标题：</b>" + vm.$data.naire_title);
     $('#naire_info').html("<b>问卷说明：</b>" + vm.$data.naire_info);
+    $('#naire_url').html("<b>问卷链接：</b>" + vm.$data.naire_url);
     $('#start_time').html("<b>开始时间：</b>" + vm.$data.start_time);
     $('#end_time').html("<b>结束时间：</b>" + vm.$data.end_time);
     var html = "";
