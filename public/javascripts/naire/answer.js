@@ -50,6 +50,17 @@ form.on('submit(answernaire)', function() {
                 return layer.msg("第" + parseInt(questionIndex + 1) + "题请填写整数！");
         }
     }
+    //防止非必填的文本/数字题丢失答案
+    for (var i = 0; i < vm.$data.question_ids.length; i++) {
+        if (vm.$data.question_types[i] === '3') {
+            vm.$data.answers[i][0] = $('#' + vm.$data.question_ids[i] + 'text').val();
+            vm.$data.need_answer.push(i);
+        }
+        else if (vm.$data.question_types[questionIndex] === '4') {
+            vm.$data.answers[i][0] = $('#' + vm.$data.question_ids[i] + 'num').val();
+            vm.$data.need_answer.push(i);
+        }
+    }
     // console.log(vm.$data.need_answer);
     // console.log(vm.$data.answers);
     for (var i = 0; i < vm.$data.need_answer.length; i++) {
