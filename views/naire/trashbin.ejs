@@ -235,6 +235,17 @@
         }
       })
     }
+
+    function check(naire_id) {
+      var token = getCookie('token');
+      if (token != "") {
+          window.location.href = "check?naire_id=" + naire_id;
+      } else {
+          layer.open({
+            title: '操作结果', content: '请先登录！'
+          });
+      }
+    }
   </script>
 </body>
 
