@@ -80,14 +80,14 @@
       },
       cols: [[
         { type: 'checkbox' },
-        { field: 'naire_id', title: '问卷ID', width: 200, sort: true },
-        { field: 'naire_title', title: '问卷标题', width: 250, sort: true },
-        { field: 'create_time', title: '创建时间', width: 160, sort: true },
-        { field: 'start_time', title: '开始时间', width: 160, sort: true },
-        { field: 'end_time', title: '结束时间', width: 160, sort: true },
-        { field: 'naire_status', title: '状态', width: 75, sort: true },
+        { field: 'naire_id', title: '问卷ID', width: '8.15%', sort: true },
+        { field: 'naire_title', title: '问卷标题', width: '20%', sort: true },
+        { field: 'create_time', title: '创建时间', width: '13%', sort: true },
+        { field: 'start_time', title: '开始时间', width: '13%', sort: true },
+        { field: 'end_time', title: '结束时间', width: '13%', sort: true },
+        { field: 'naire_status', title: '状态', width: '6%', sort: true },
         {
-          field: 'btn', title: '操作', width: 195,
+          field: 'btn', title: '操作',
           templet: function (d) {
             return "<a class=\"layui-btn layui-btn-sm\" target='_blank' onclick=restore('" + d.naire_id + "')>恢复</a>" + 
               "<a class=\"layui-btn layui-btn-sm layui-btn-danger\" target='_blank' onclick=del('" + d.naire_id + "')>删除</a>" +
@@ -118,14 +118,14 @@
         },
         cols: [[
           { type: 'checkbox' },
-          { field: 'naire_id', title: '问卷ID', width: 200, sort: true },
-          { field: 'naire_title', title: '问卷标题', width: 250, sort: true },
-          { field: 'create_time', title: '创建时间', width: 160, sort: true },
-          { field: 'start_time', title: '开始时间', width: 160, sort: true },
-          { field: 'end_time', title: '结束时间', width: 160, sort: true },
-          { field: 'naire_status', title: '状态', width: 75, sort: true },
+          { field: 'naire_id', title: '问卷ID', width: '8.15%', sort: true },
+        { field: 'naire_title', title: '问卷标题', width: '20%', sort: true },
+        { field: 'create_time', title: '创建时间', width: '13%', sort: true },
+        { field: 'start_time', title: '开始时间', width: '13%', sort: true },
+        { field: 'end_time', title: '结束时间', width: '13%', sort: true },
+        { field: 'naire_status', title: '状态', width: '6%', sort: true },
           {
-            field: 'btn', title: '操作', width: 195,
+            field: 'btn', title: '操作',
             templet: function (d) {
               return "<a class=\"layui-btn layui-btn-sm\" target='_blank' onclick=restore('" + d.naire_id + "')>恢复</a>" + 
               "<a class=\"layui-btn layui-btn-sm layui-btn-danger\" target='_blank' onclick=del('" + d.naire_id + "')>删除</a>" +

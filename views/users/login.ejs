@@ -14,6 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <!-- vue's ajax -->
     <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
 </head>
 
 <body>
@@ -45,7 +46,7 @@
                 </div>
                 <div class="layui-col-xs5">
                   <div style="margin-left: 10px;">
-                    <img src="https://www.oschina.net/action/user/captcha" class="layadmin-user-login-codeimg" id="LAY-user-get-vercode">
+                    <img src="http://www.webxml.com.cn/WebServices/ValidateCodeWebService.asmx/smallValidateImage?byString=" class="layadmin-user-login-codeimg" id="LAY-user-get-vercode">
                   </div>
                 </div>
               </div>
@@ -77,5 +78,11 @@
   
       <script src="../layui/layui.all.js"></script>
       <script src="../javascripts/users/login.js"></script>
+      <script>
+        $('#LAY-user-get-vercode').click(function() {
+          var str = Math.random().toString(36).slice(-4);
+          $('#LAY-user-get-vercode').attr('src', 'http://www.webxml.com.cn/WebServices/ValidateCodeWebService.asmx/smallValidateImage?byString=' + str);
+        })
+      </script>
 </body>
 </html>

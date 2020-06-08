@@ -80,19 +80,20 @@
       },
       cols: [[
         { type: 'checkbox' },
-        { field: 'naire_id', title: '问卷ID', width: 150, sort: true },
-        { field: 'naire_title', title: '问卷标题', width: 250, sort: true },
-        { field: 'create_time', title: '创建时间', width: 160, sort: true },
-        { field: 'start_time', title: '开始时间', width: 160, sort: true },
-        { field: 'end_time', title: '结束时间', width: 160, sort: true },
-        { field: 'naire_status', title: '状态', width: 75, sort: true },
+        { field: 'naire_id', title: '问卷ID', width: '8.15%', sort: true },
+        { field: 'naire_title', title: '问卷标题', width: '20%', sort: true },
+        { field: 'create_time', title: '创建时间', width: '13%', sort: true },
+        { field: 'start_time', title: '开始时间', width: '13%', sort: true },
+        { field: 'end_time', title: '结束时间', width: '13%', sort: true },
+        { field: 'naire_status', title: '状态', width: '6%', sort: true },
         {
-          field: 'btn', title: '操作', width: 236,
+          field: 'btn', title: '操作', 
           templet: function (d) {
             return "<a class=\"layui-btn layui-btn-sm\" target='_blank' onclick=\"edit('" + d.naire_id + "')\">编辑</a>" + 
               "<a class=\"layui-btn layui-btn-sm layui-btn-danger\" target='_blank' onclick=\"del('" + d.naire_id + "')\">删除</a>" +
               "<a class=\"layui-btn layui-btn-sm layui-btn-normal\" onclick=\"check('" + d.naire_id + "')\">查看</a>" +
-              "<a class=\"layui-btn layui-btn-sm layui-btn-warm\" onclick=\"unstar('" + d.naire_id + "', '" + d.is_star + "')\">取消</a>";
+              "<a class=\"layui-btn layui-btn-sm layui-btn-warm\" onclick=\"star('" + d.naire_id + "', '" + d.is_star + "')\">收藏</a>" + 
+              "<a class=\"layui-btn layui-btn-sm layui-bg-cyan\" onclick=\"share('" + d.naire_id + "')\">分享</a>";
           }
         }
       ]],
@@ -119,22 +120,23 @@
         },
         cols: [[
         { type: 'checkbox' },
-        { field: 'naire_id', title: '问卷ID', width: 150, sort: true },
-        { field: 'naire_title', title: '问卷标题', width: 250, sort: true },
-        { field: 'create_time', title: '创建时间', width: 160, sort: true },
-        { field: 'start_time', title: '开始时间', width: 160, sort: true },
-        { field: 'end_time', title: '结束时间', width: 160, sort: true },
-        { field: 'naire_status', title: '状态', width: 75, sort: true },
-          {
-            field: 'btn', title: '操作', width: 236,
-            templet: function (d) {
-              return "<a class=\"layui-btn layui-btn-sm\" target='_blank' onclick=edit('" + d.naire_id + "')>编辑</a>" + 
-              "<a class=\"layui-btn layui-btn-sm layui-btn-danger\" target='_blank' onclick=del('" + d.naire_id + "')>删除</a>" +
-              "<a class=\"layui-btn layui-btn-sm layui-btn-normal\" onclick=check('" + d.naire_id + "')>查看</a>" +
-              "<a class=\"layui-btn layui-btn-sm layui-btn-warm\" onclick=\"unstar('" + d.naire_id + "', '" + d.is_star + "')\">取消</a>";
-            }
+        { field: 'naire_id', title: '问卷ID', width: '8.15%', sort: true },
+        { field: 'naire_title', title: '问卷标题', width: '20%', sort: true },
+        { field: 'create_time', title: '创建时间', width: '13%', sort: true },
+        { field: 'start_time', title: '开始时间', width: '13%', sort: true },
+        { field: 'end_time', title: '结束时间', width: '13%', sort: true },
+        { field: 'naire_status', title: '状态', width: '6%', sort: true },
+        {
+          field: 'btn', title: '操作', 
+          templet: function (d) {
+            return "<a class=\"layui-btn layui-btn-sm\" target='_blank' onclick=\"edit('" + d.naire_id + "')\">编辑</a>" + 
+              "<a class=\"layui-btn layui-btn-sm layui-btn-danger\" target='_blank' onclick=\"del('" + d.naire_id + "')\">删除</a>" +
+              "<a class=\"layui-btn layui-btn-sm layui-btn-normal\" onclick=\"check('" + d.naire_id + "')\">查看</a>" +
+              "<a class=\"layui-btn layui-btn-sm layui-btn-warm\" onclick=\"star('" + d.naire_id + "', '" + d.is_star + "')\">收藏</a>" + 
+              "<a class=\"layui-btn layui-btn-sm layui-bg-cyan\" onclick=\"share('" + d.naire_id + "')\">分享</a>";
           }
-        ]],
+        }
+      ]],
         even: true
     });
     })
@@ -258,6 +260,16 @@
             title: '操作结果', content: '请先登录！'
           });
       }
+    }
+
+    function share(naire_id) {
+      var url = window.location.href;
+      var index = url.indexOf('star');
+      var preUrl = url.substr(0, index);
+      layer.open({
+        title: "问卷链接",
+        content: preUrl + 'answer?naire_id=' + naire_id
+      })
     }
   </script>
 </body>
