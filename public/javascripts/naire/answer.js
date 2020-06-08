@@ -61,7 +61,10 @@ form.on('submit(answernaire)', function() {
             vm.$data.need_answer.push(i);
         }
     }
+<<<<<<< HEAD
     // console.log(vm.$data.answers);
+=======
+>>>>>>> 1fff2d45b0277100f5a9c9c788701b77776b8754
     // console.log(vm.$data.need_answer);
     // console.log(vm.$data.answers);
     for (var i = 0; i < vm.$data.need_answer.length; i++) {
