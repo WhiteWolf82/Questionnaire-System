@@ -236,6 +236,7 @@ function editQuestion(val) {
 function cascadeDel(val) {
     if (addVm.$data.relate_questions[val].length === 0)
         return;
+    var toDel = new Array();
     for (var i = 0; i < addVm.$data.relate_questions[val].length; i++) {
         var index = addVm.$data.question_ids.indexOf(addVm.$data.relate_questions[val][i]);
         var id = addVm.$data.question_ids[index];
@@ -244,13 +245,30 @@ function cascadeDel(val) {
         //console.log('del: ' + addVm.$data.question_ids[index]);
         if (addVm.$data.question_options[index].indexOf('<relate>') !== -1) {
             //从关联的问题列表中删除自身
-            var tmpStr = getTmpStr(index);
-            var relateIndex = tmpStr.indexOf('<relate');
-            var relateQuestionID = tmpStr.substr(0, relateIndex);
-            var relateQuestionIndex = addVm.$data.question_ids.indexOf(relateQuestionID);
-            var thisIndex = addVm.$data.relate_questions[relateQuestionIndex].indexOf(id);
-            addVm.$data.relate_questions[relateQuestionIndex].splice(thisIndex, 1)
+            // var tmpStr = getTmpStr(index);
+            // var relateIndex = tmpStr.indexOf('<relate');
+            // var relateQuestionID = tmpStr.substr(0, relateIndex);
+            // var relateQuestionIndex = addVm.$data.question_ids.indexOf(relateQuestionID);
+            // var thisIndex = addVm.$data.relate_questions[relateQuestionIndex].indexOf(id);
+            // addVm.$data.relate_questions[relateQuestionIndex].splice(thisIndex, 1);
+            toDel.push(id);
+        } else {
+            addVm.$data.question_ids.splice(index, 1);
+            addVm.$data.question_types.splice(index, 1);
+            addVm.$data.question_titles.splice(index, 1);
+            addVm.$data.question_options.splice(index, 1);
+            addVm.$data.question_required.splice(index, 1);
+            addVm.$data.relate_questions.splice(index, 1);
         }
+    }
+    for (var i = 0; i < toDel.length; i++) {
+        var index = addVm.$data.question_ids.indexOf(toDel[i]);
+        var tmpStr = getTmpStr(index);
+        var relateIndex = tmpStr.indexOf('<relate');
+        var relateQuestionID = tmpStr.substr(0, relateIndex);
+        var relateQuestionIndex = addVm.$data.question_ids.indexOf(relateQuestionID);
+        var thisIndex = addVm.$data.relate_questions[relateQuestionIndex].indexOf(id);
+        addVm.$data.relate_questions[relateQuestionIndex].splice(thisIndex, 1);
         addVm.$data.question_ids.splice(index, 1);
         addVm.$data.question_types.splice(index, 1);
         addVm.$data.question_titles.splice(index, 1);
