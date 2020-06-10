@@ -144,6 +144,7 @@ function showResult() {
     for (var i = 0; i < toRenderIDs.length; i++) {
         script += "<script>layui.table.init('" + toRenderIDs[i] + "', { \
             limit: 5, \
+            limits: [5, 10], \
             page: true \
         });</script>"
     }
