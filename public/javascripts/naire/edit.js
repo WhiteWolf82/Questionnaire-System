@@ -49,6 +49,12 @@ form.on('submit(editnaire)', function(obj) {
                         result = false;
             });
         }
+        for (var i = 0; i < vm.$data.del_question_ids.length; i++) {
+            $.get('/api/delQuestion?question_id=' + vm.$data.del_question_ids[i], function(data, status) {
+                if (!data.result)
+                    result = false;
+            })
+        }
         if (!result) {
             layer.open({
                 title: '操作结果', content: '修改失败，请重试！'
@@ -187,6 +193,7 @@ function editQuestion(val) {
 function cascadeDel(val) {
     if (vm.$data.relate_questions[val].length === 0)
         return;
+    var toDel = new Array();
     for (var i = 0; i < vm.$data.relate_questions[val].length; i++) {
         var index = vm.$data.question_ids.indexOf(vm.$data.relate_questions[val][i]);
         var id = vm.$data.question_ids[index];
@@ -196,13 +203,30 @@ function cascadeDel(val) {
         vm.$data.del_question_ids.push(id);
         if (vm.$data.question_options[index].indexOf('<relate>') !== -1) {
             //从关联的问题列表中删除自身
-            var tmpStr = getTmpStr(index);
-            var relateIndex = tmpStr.indexOf('<relate');
-            var relateQuestionID = tmpStr.substr(0, relateIndex);
-            var relateQuestionIndex = vm.$data.question_ids.indexOf(relateQuestionID);
-            var thisIndex = vm.$data.relate_questions[relateQuestionIndex].indexOf(id);
-            vm.$data.relate_questions[relateQuestionIndex].splice(thisIndex, 1)
+            // var tmpStr = getTmpStr(index);
+            // var relateIndex = tmpStr.indexOf('<relate');
+            // var relateQuestionID = tmpStr.substr(0, relateIndex);
+            // var relateQuestionIndex = vm.$data.question_ids.indexOf(relateQuestionID);
+            // var thisIndex = vm.$data.relate_questions[relateQuestionIndex].indexOf(id);
+            // vm.$data.relate_questions[relateQuestionIndex].splice(thisIndex, 1);
+            toDel.push(id);
+        } else {
+            vm.$data.question_ids.splice(index, 1);
+            vm.$data.question_types.splice(index, 1);
+            vm.$data.question_titles.splice(index, 1);
+            vm.$data.question_options.splice(index, 1);
+            vm.$data.question_required.splice(index, 1);
+            vm.$data.relate_questions.splice(index, 1);
         }
+    }
+    for (var i = 0; i < toDel.length; i++) {
+        var index = vm.$data.question_ids.indexOf(toDel[i]);
+        var tmpStr = getTmpStr(index);
+        var relateIndex = tmpStr.indexOf('<relate');
+        var relateQuestionID = tmpStr.substr(0, relateIndex);
+        var relateQuestionIndex = vm.$data.question_ids.indexOf(relateQuestionID);
+        var thisIndex = vm.$data.relate_questions[relateQuestionIndex].indexOf(id);
+        vm.$data.relate_questions[relateQuestionIndex].splice(thisIndex, 1);
         vm.$data.question_ids.splice(index, 1);
         vm.$data.question_types.splice(index, 1);
         vm.$data.question_titles.splice(index, 1);
