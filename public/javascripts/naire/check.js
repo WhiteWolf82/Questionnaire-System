@@ -29,7 +29,11 @@ function showResult() {
     var toRenderIDs = [];
     //console.log(vm.$data.answer_options);
     for (var i = 0; i < vm.$data.answer_options.length; i++) {
-        var answerNum = vm.$data.answer_options[i].length;
+        var answerNum;
+        if (vm.$data.question_types[i] === 3 || vm.$data.question_types[i] === 4)
+            answerNum = 0;
+        else
+            answerNum = vm.$data.answer_options[i].length;
         var tmpStr = "";
         tmpStr += "<p><b>第" + parseInt(i + 1) + "题：</b>" + vm.$data.question_titles[i];
         if (vm.$data.question_types[i] === 0)
@@ -109,12 +113,15 @@ function showResult() {
             tmpStr += "<tbody>";
             var totalNum = 0;
             for (var j = 0; j < vm.$data.answer_options[i].length; j++) {
-                tmpStr += "<tr>";
-                tmpStr += "<td>" + parseInt(j + 1) + "</td>";
-                tmpStr += "<td>" + vm.$data.answer_options[i][j] + "</td>";
-                tmpStr += "</tr>"
-                if (vm.$data.question_types[i] === 4)
-                    totalNum += Number(vm.$data.answer_options[i][j]);
+                if (vm.$data.answer_options[i][j].length !== 0) {
+                    answerNum++;
+                    tmpStr += "<tr>";
+                    tmpStr += "<td>" + parseInt(answerNum) + "</td>";
+                    tmpStr += "<td>" + vm.$data.answer_options[i][j] + "</td>";
+                    tmpStr += "</tr>"
+                    if (vm.$data.question_types[i] === 4)
+                        totalNum += Number(vm.$data.answer_options[i][j]);
+                    }
             }
             tmpStr += "</tbody></table>";
             var avgNum = totalNum / answerNum * 1.0;
