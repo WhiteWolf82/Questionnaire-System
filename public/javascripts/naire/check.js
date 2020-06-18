@@ -27,6 +27,9 @@ function showResult() {
     $('#end_time').html("<b>结束时间：</b>" + vm.$data.end_time);
     var html = "";
     var toRenderIDs = [];
+    var chartIDs = [];
+    var chartValues = [];
+    var chartNames = [];
     //console.log(vm.$data.answer_options);
     for (var i = 0; i < vm.$data.answer_options.length; i++) {
         var answerNum;
@@ -54,6 +57,9 @@ function showResult() {
             tmpStr += "<tbody>";
             var totalOptions = vm.$data.question_options[i].split('<option>');
             //console.log(totalOptions);
+            chartIDs.push(i);
+            chartValues.push(new Array());
+            chartNames.push(new Array());
             for (var j = 0; j < totalOptions.length - 1; j++) {
                 tmpStr += "<tr>";
                 tmpStr += "<td>" + totalOptions[j] + "</td>";
@@ -65,6 +71,8 @@ function showResult() {
                 }
                 var percent = (Math.round(cnt / answerNum * 10000) / 100.00) + "%";
                 percent = (percent === "NaN%") ? "0%" : percent;
+                chartValues[chartValues.length - 1].push(cnt);
+                chartNames[chartNames.length - 1].push(totalOptions[j]);
                 //console.log(percent);
                 tmpStr += "<td>" + cnt + "</td>";
                 tmpStr += "<td><div class='layui-progress' lay-showPercent='true'><div class='layui-progress-bar' " +
@@ -72,6 +80,7 @@ function showResult() {
                 tmpStr += "</tr>";
             }
             tmpStr += "</tbody></table>";
+            tmpStr += "<div id='result" + i + "' align='center' style='width:100%;height:300px;'></div>";
             tmpStr += "<p><b>本题有效填写人次：</b>" + answerNum + "</p><br>";
         } else if (vm.$data.question_types[i] === 2) {
             tmpStr += "<table class='layui-table'>";
@@ -83,6 +92,9 @@ function showResult() {
             var floorRate = vm.$data.question_options[i].substr(0, floorStart) * 1;
             var ceilRate = vm.$data.question_options[i].substr(floorStart + 11, ceilStart - floorStart - 11) * 1;
             var totalScore = 0;
+            chartIDs.push(i);
+            chartValues.push(new Array());
+            chartNames.push(new Array());
             for (var j = floorRate; j <= ceilRate; j++) {
                 tmpStr += "<tr>";
                 tmpStr += "<td>" + j + "</td>";
@@ -95,14 +107,18 @@ function showResult() {
                 }
                 var percent = (Math.round(cnt / answerNum * 10000) / 100.00) + "%";
                 percent = (percent === "NaN%") ? "0%" : percent;
+                chartValues[chartValues.length - 1].push(cnt);
+                chartNames[chartNames.length - 1].push(j);
                 tmpStr += "<td>" + cnt + "</td>";
                 tmpStr += "<td><div class='layui-progress' lay-showPercent='true'><div class='layui-progress-bar' " +
                         "lay-percent='" + percent + "'></div></div></td>";
                 tmpStr += "</tr>";
             }
             tmpStr += "</tbody></table>";
+            tmpStr += "<div id='result" + i + "' align='center' style='width:100%;height:300px;'></div>";
             var avgScore = totalScore / answerNum * 1.0;
             avgScore = avgScore.toFixed(2);
+            totalScore = totalScore.toFixed(2);
             tmpStr += "<p><b>本题有效填写人次：</b>" + answerNum + "</p>";
             tmpStr += "<p><b>本题总分值：</b>" + totalScore + "&nbsp; &nbsp; <b>平均分值：</b>" + avgScore + "</p><br>";
         } else if (vm.$data.question_types[i] === 3 || vm.$data.question_types[i] === 4) {
@@ -126,6 +142,7 @@ function showResult() {
             tmpStr += "</tbody></table>";
             var avgNum = totalNum / answerNum * 1.0;
             avgNum = avgNum.toFixed(2);
+            totalNum = totalNum.toFixed(2);
             if (vm.$data.question_types[i] === 4) {
                 tmpStr += "<p><b>本题有效填写人次：</b>" + answerNum + "</p>";
                 tmpStr += "<p><b>本题总分值：</b>" + totalNum + "&nbsp; &nbsp; <b>平均分值：</b>" + avgNum + "</p><br>";
@@ -140,13 +157,32 @@ function showResult() {
         var element = layui.element;
         element.render();
     });
-    var script = "";
+    var script = $('#addScript').html();
     for (var i = 0; i < toRenderIDs.length; i++) {
         script += "<script>layui.table.init('" + toRenderIDs[i] + "', { \
             limit: 5, \
             limits: [5, 10], \
             page: true \
-        });</script>"
+        });</script>";
+    }
+    for (var i = 0; i < chartIDs.length; i++) {
+        script += "<script>echarts.init(document.getElementById('result" + chartIDs[i] + "')).setOption({";
+        script += "series: [{ type: 'pie', center: ['80%', '52%'], data: [";
+        for (var j = 0; j < chartNames[i].length - 1; j++) {
+            script += "{name: '" + chartNames[i][j] + "', value: '" + chartValues[i][j] + "'},";
+        }
+        script += "{name: '" + chartNames[i][chartNames[i].length - 1] + "', value: '" + chartValues[i][chartValues[i].length - 1] + "'}]},";
+        script += "{type: 'bar', data: [";
+        for (var j = 0; j < chartNames[i].length - 1; j++) {
+            script += "'" + chartValues[i][j] + "', ";
+        }
+        script += "'" + chartValues[i][chartValues[i].length - 1] + "']}], "
+        script += "tooltip: {trigger: 'item'}, ";
+        script += "xAxis: {data: [";
+        for (var j = 0; j < chartNames[i].length - 1; j++) {
+            script += "'" + chartNames[i][j] + "', ";
+        }
+        script += "'" + chartNames[i][chartNames[i].length - 1] + "']}, yAxis: {}, grid: {left: '10%', right: '50%'}});</script>";
     }
     $('#addScript').html(script);
 }
