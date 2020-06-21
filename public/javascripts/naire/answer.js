@@ -114,6 +114,15 @@ form.on('submit(answernaire)', function() {
     }
 });
 
+function cascadeHide(index) {
+    $('#' + vm.$data.question_ids[index]).hide();
+    if (vm.$data.need_answer.indexOf(index) !== -1)
+        vm.$data.need_answer.splice(vm.$data.need_answer.indexOf(index), 1);
+    for (var k = 0; k < vm.$data.relate_questions[index].length; k++) {
+        cascadeHide(vm.$data.relate_questions[index][k]);
+    }
+}
+
 function addFormOn() {
     var script = $('#addScript').html();
     for (var i = 0; i < vm.$data.checkboxFilters.length; i++) {
@@ -134,10 +143,7 @@ function addFormOn() {
                     } \
                     if (flag) \
                     {$('#' + vm.$data.question_ids[vm.$data.relate_questions[index][j]]).show(); vm.$data.need_answer.push(vm.$data.relate_questions[index][j]);}\
-                    else \
-                    {$('#' + vm.$data.question_ids[vm.$data.relate_questions[index][j]]).hide(); \
-                    if (vm.$data.need_answer.indexOf(vm.$data.relate_questions[index][j]) !== -1) \
-                        vm.$data.need_answer.splice(vm.$data.need_answer.indexOf(vm.$data.relate_questions[index][j]), 1)}\
+                    else cascadeHide(vm.$data.relate_questions[index][j]);\
                 } \
             } layui.form.render(); \
         })</script>";
@@ -160,10 +166,7 @@ function addFormOn() {
                     } \
                     if (flag) \
                     {$('#' + vm.$data.question_ids[vm.$data.relate_questions[index][j]]).show(); vm.$data.need_answer.push(vm.$data.relate_questions[index][j]);}\
-                    else \
-                    {$('#' + vm.$data.question_ids[vm.$data.relate_questions[index][j]]).hide(); \
-                    if (vm.$data.need_answer.indexOf(vm.$data.relate_questions[index][j]) !== -1) \
-                        vm.$data.need_answer.splice(vm.$data.need_answer.indexOf(vm.$data.relate_questions[index][j]), 1)}\
+                    else cascadeHide(vm.$data.relate_questions[index][j]);\
                 } \
             } layui.form.render(); \
         })</script>";
