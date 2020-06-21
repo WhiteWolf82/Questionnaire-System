@@ -58,6 +58,7 @@ form.on('submit(addnaire)', function(obj) {
         var failIndex = -1;
         var flag = true;
         console.log(addVm.$data.question_titles);
+        $.ajaxSettings.async = false;
         for (var i = 0; i < addVm.$data.question_ids.length && flag; i++) {
             $.post('../../api/addQuestion', {question_id: addVm.$data.question_ids[i], naire_id: addVm.$data.naire_id, question_type: addVm.$data.question_types[i],
                 question_title: addVm.$data.question_titles[i], question_option: addVm.$data.question_options[i], question_require: addVm.$data.question_required[i]},
@@ -69,6 +70,7 @@ form.on('submit(addnaire)', function(obj) {
                     }
                 })
         }
+        $.ajaxSettings.async = true;
         if (result) {
             layer.confirm('添加成功！', {
                 title: '操作结果', btn: ['确定']
