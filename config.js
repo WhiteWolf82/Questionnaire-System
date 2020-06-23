@@ -2,8 +2,8 @@ var config = {
     secretKey: "ZheBoShiRouDanCongJi",
     db: {
         host: 'localhost',
-        user: 'root',
-        password: 'WLX643204',
+        user: 'xxx',
+        password: 'xxxxxx',
         port: '3306',
         database: 'questionnaire_system'
     }
