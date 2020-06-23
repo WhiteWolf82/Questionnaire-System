@@ -231,7 +231,10 @@ function showQuestions() {
             tmpStr += "<span style='color: red'>（必填）</span>";
         tmpStr += "</h3>";
         if (vm.$data.question_types[i] === '3')
-            tmpStr += "<textarea id=" + vm.$data.question_ids[i] + 'text' + " class='layui-textarea' style='margin-top: 15px'></textarea>";
+            if (vm.$data.question_options[i][0] === '1')
+                tmpStr += "<textarea id=" + vm.$data.question_ids[i] + 'text' + " class='layui-textarea' style='margin-top: 15px'></textarea>";
+            else
+                tmpStr += "<input id=" + vm.$data.question_ids[i] + 'text' + " class='layui-input' style='margin-top: 15px'>";
         else if (vm.$data.question_types[i] === '4') {
             tmpStr += "<input id=" + vm.$data.question_ids[i] + 'num' + " class='layui-input' style='margin-top: 15px' placeholder='";
             var index = vm.$data.question_options[i].indexOf('<numtype>');
